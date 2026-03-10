@@ -1,0 +1,108 @@
+Launching lib/main.dart on macOS in debug mode...
+Building macOS application...                                   
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:macOS, arch:arm64, id:00006040-000C68363E92801C, name:My Mac }
+{ platform:macOS, arch:x86_64, id:00006040-000C68363E92801C, name:My Mac }
+✓ Built build/macos/Build/Products/Debug/mafia_trainer.app
+Syncing files to device macOS...                                    13ms
+
+Flutter run key commands.
+r Hot reload. 🔥🔥🔥
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate "flutter run" but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+A Dart VM Service on macOS is available at: http://127.0.0.1:50995/e3VcaElBL-U=/
+
+══╡ EXCEPTION CAUGHT BY RENDERING LIBRARY ╞═════════════════════════════════════════════════════════
+The following assertion was thrown during layout:
+A RenderFlex overflowed by 203 pixels on the bottom.
+
+The relevant error-causing widget was:
+  Column Column:file:///Users/razlifshitz/Projects/MafiaTrainer/lib/screens/setup_screen.dart:28:14
+
+The overflowing RenderFlex has an orientation of Axis.vertical.
+The edge of the RenderFlex that is overflowing has been marked in the rendering with a yellow and
+black striped pattern. This is usually caused by the contents being too big for the RenderFlex.
+Consider applying a flex factor (e.g. using an Expanded widget) to force the children of the
+RenderFlex to fit within the available space instead of being sized to their natural size.
+This is considered an error condition because it indicates that there is content that cannot be
+seen. If the content is legitimately bigger than the available space, consider clipping it with a
+ClipRect widget before putting it in the flex, or using a scrollable container rather than a Flex,
+like a ListView.
+The specific RenderFlex in question is: RenderFlex#50da9 relayoutBoundary=up12 OVERFLOWING:
+  creator: Column ← Padding ← DecoratedBox ← ConstrainedBox ← Container ← Center ← SetupScreen ←
+    Padding ← ConstrainedBox ← Container ← Center ← Expanded ← ⋯
+  parentData: offset=Offset(24.0, 24.0) (can use size)
+  constraints: BoxConstraints(0.0<=w<=272.0, 0.0<=h<=406.0)
+  size: Size(272.0, 406.0)
+  direction: vertical
+  mainAxisAlignment: start
+  mainAxisSize: min
+  crossAxisAlignment: center
+  verticalDirection: down
+  spacing: 0.0
+◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤◢◤
+════════════════════════════════════════════════════════════════════════════════════════════════════
+
+The Flutter DevTools debugger and profiler on macOS is available at: http://127.0.0.1:9100?uri=http://127.0.0.1:50995/e3VcaElBL-U=/
+[ERROR:flutter/lib/ui/window/platform_configuration.cc(428)] Reported frame time is older than the last one; clamping. 3321755817582 < 3321755821332 ~= 3750
+flutter: DEBUG: continueToNextRound - currentRoundIndex: 1, allRounds.length: 1
+flutter: DEBUG: continueToNextRound - playerStates: {1: Instance of 'PlayerState', 2: Instance of 'PlayerState', 4: Instance of 'PlayerState'}
+flutter: DEBUG: getPlayerBasedQuestions - currentRoundIndex: 1, activePlayers: [3, 5, 6, 7, 8, 9, 10]
+flutter: DEBUG: getPlayerBasedQuestions - checking rounds from 0 to 0, allRounds.length=1
+flutter: DEBUG: getPlayerBasedQuestions - processing round 0
+flutter: DEBUG: getPlayerBasedQuestions - round 0: splitPhase=true, votes.length=0
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 3, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 3
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 5, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 5
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 6, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 6
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 7, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 7
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 8, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 8
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 9, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 9
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 10, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 10
+flutter: DEBUG: continueToNextRound - questions.length: 7
+flutter: DEBUG: Starting testing phase with 7 questions
+flutter: DEBUG: Notifying listeners after setting testing state
+flutter: DEBUG: getPlayerBasedQuestions - currentRoundIndex: 1, activePlayers: [3, 5, 6, 7, 8, 9, 10]
+flutter: DEBUG: getPlayerBasedQuestions - checking rounds from 0 to 0, allRounds.length=1
+flutter: DEBUG: getPlayerBasedQuestions - processing round 0
+flutter: DEBUG: getPlayerBasedQuestions - round 0: splitPhase=true, votes.length=0
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 3, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 3
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 5, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 5
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 6, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 6
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 7, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 7
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 8, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 8
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 9, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 9
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 10, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=2, voters=[3, 4, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 10
+flutter: DEBUG: After notifyListeners, gameState: GameState.testing, questions.length: 7
+Lost connection to device.

@@ -1,0 +1,53 @@
+Launching lib/main.dart on macOS in debug mode...
+Building macOS application...                                   
+--- xcodebuild: WARNING: Using the first of multiple matching destinations:
+{ platform:macOS, arch:arm64, id:00006040-000C68363E92801C, name:My Mac }
+{ platform:macOS, arch:x86_64, id:00006040-000C68363E92801C, name:My Mac }
+✓ Built build/macos/Build/Products/Debug/mafia_trainer.app
+Syncing files to device macOS...                                    20ms
+
+Flutter run key commands.
+r Hot reload. 🔥🔥🔥
+R Hot restart.
+h List all available interactive commands.
+d Detach (terminate "flutter run" but leave application running).
+c Clear the screen
+q Quit (terminate the application on the device).
+
+A Dart VM Service on macOS is available at: http://127.0.0.1:50531/Yp3lvIGsFWE=/
+The Flutter DevTools debugger and profiler on macOS is available at: http://127.0.0.1:9101?uri=http://127.0.0.1:50531/Yp3lvIGsFWE=/
+flutter: DEBUG: continueToNextRound - currentRoundIndex: 1, allRounds.length: 1
+flutter: DEBUG: continueToNextRound - playerStates: {8: Instance of 'PlayerState'}
+flutter: DEBUG: getPlayerBasedQuestions - currentRoundIndex: 1, activePlayers: [1, 2, 3, 4, 5, 6, 7, 9, 10]
+flutter: DEBUG: getPlayerBasedQuestions - checking rounds from 0 to 0, allRounds.length=1
+flutter: DEBUG: getPlayerBasedQuestions - processing round 0
+flutter: DEBUG: getPlayerBasedQuestions - round 0: splitPhase=true, votes.length=0
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 1, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=4, voters=[2, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 1
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 2, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=4, voters=[2, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 2
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 3, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=4, voters=[2, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 3
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 4, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=4, voters=[2, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 4
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 5, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=4, voters=[2, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 5
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 6, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=4, voters=[2, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 6
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 7, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=4, voters=[2, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 7
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 9, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=4, voters=[2, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 9
+flutter: DEBUG: getPlayerBasedQuestions - creating split phase question for player 10, round 0
+flutter: DEBUG: getPlayerBasedQuestions - splitPhase: player1=1, splitPartner=4, voters=[2, 5, 7, 8, 10]
+flutter: DEBUG: getPlayerBasedQuestions - successfully created split phase question for player 10
+flutter: DEBUG: continueToNextRound - questions.length: 9
+Lost connection to device.
