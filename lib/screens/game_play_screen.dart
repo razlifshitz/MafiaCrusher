@@ -679,16 +679,21 @@ class GamePlayScreen extends StatelessWidget {
             ? [nominated[1]]
             : null;
     final isShowingResults = phase == PracticeSplitPhase.showingResultsFirst || phase == PracticeSplitPhase.showingResultsSecond;
+    final isFeedbackShowingVotes = phase == PracticeSplitPhase.feedback && controller.practiceSplitShowVotesOpen;
     final resultsPlayerNumber = isShowingResults
         ? (phase == PracticeSplitPhase.showingResultsFirst && nominated.isNotEmpty
             ? nominated[0]
             : (nominated.length >= 2 ? nominated[1] : null))
         : null;
-    final highlightedVoterIds = isShowingResults
-        ? (phase == PracticeSplitPhase.showingResultsFirst
+    final highlightedVoterIds = isFeedbackShowingVotes
+        ? (controller.practiceSplitShowVotesShowFirst
             ? controller.practiceSplitVotersToFirst
             : controller.practiceSplitVotersToSecond)
-        : null;
+        : (isShowingResults
+            ? (phase == PracticeSplitPhase.showingResultsFirst
+                ? controller.practiceSplitVotersToFirst
+                : controller.practiceSplitVotersToSecond)
+            : null);
     final circularLayout = _buildCircularLayout(
       context,
       null,
@@ -733,7 +738,7 @@ class GamePlayScreen extends StatelessWidget {
                     children: [
                       circularLayout,
                       SizedBox(height: 4),
-                      _buildLegend(isMobile, practiceSplit: true, showVotedLegend: isShowingResults),
+                      _buildLegend(isMobile, practiceSplit: true, showVotedLegend: isShowingResults || isFeedbackShowingVotes),
                     ],
                   ),
                 ),
@@ -756,9 +761,17 @@ class GamePlayScreen extends StatelessWidget {
                     _buildPracticeSplitResultsHeadline(context, isMobile, resultsPlayerNumber),
                     SizedBox(height: 12),
                   ],
+                  if (phase == PracticeSplitPhase.feedback) ...[
+                    _buildPracticeSplitFeedbackExplanation(context, isMobile),
+                    SizedBox(height: 12),
+                  ],
+                  if (phase == PracticeSplitPhase.feedback && controller.practiceSplitShowVotesOpen) ...[
+                    _buildPracticeSplitVotesInlineSwitch(context, isMobile),
+                    SizedBox(height: 12),
+                  ],
                   circularLayout,
                   SizedBox(height: 4),
-                  _buildLegend(isMobile, practiceSplit: true, showVotedLegend: isShowingResults),
+                  _buildLegend(isMobile, practiceSplit: true, showVotedLegend: isShowingResults || isFeedbackShowingVotes),
                   if (actionButton != null) ...[SizedBox(height: 12), actionButton],
                 ],
               ),
@@ -781,9 +794,17 @@ class GamePlayScreen extends StatelessWidget {
                         _buildPracticeSplitResultsHeadline(context, isMobile, resultsPlayerNumber),
                         SizedBox(height: 12),
                       ],
+                      if (phase == PracticeSplitPhase.feedback) ...[
+                        _buildPracticeSplitFeedbackExplanation(context, isMobile),
+                        SizedBox(height: 12),
+                      ],
+                      if (phase == PracticeSplitPhase.feedback && controller.practiceSplitShowVotesOpen) ...[
+                        _buildPracticeSplitVotesInlineSwitch(context, isMobile),
+                        SizedBox(height: 12),
+                      ],
                       circularLayout,
                       SizedBox(height: 4),
-                      _buildLegend(isMobile, practiceSplit: true, showVotedLegend: isShowingResults),
+                      _buildLegend(isMobile, practiceSplit: true, showVotedLegend: isShowingResults || isFeedbackShowingVotes),
                       if (actionButton != null) ...[SizedBox(height: 12), actionButton],
                     ],
                   ),
@@ -798,8 +819,18 @@ class GamePlayScreen extends StatelessWidget {
         if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.space) {
           if (controller.practiceSplitPhase == PracticeSplitPhase.ready) {
             controller.handlePracticeSplitReady();
-          } else {
+          } else if (controller.practiceSplitPhase == PracticeSplitPhase.votingToFirst ||
+              controller.practiceSplitPhase == PracticeSplitPhase.votingToSecond) {
             controller.handlePracticeSplitCastVote();
+          } else if (controller.practiceSplitPhase == PracticeSplitPhase.feedback &&
+              !controller.practiceSplitAutoAdvanceResults) {
+            if (controller.practiceSplitShowVotesOpen) {
+              controller.togglePracticeSplitShowVotesSide();
+            } else {
+              controller.handlePracticeSplitContinue();
+            }
+          } else {
+            return KeyEventResult.ignored;
           }
           return KeyEventResult.handled;
         }
@@ -862,6 +893,157 @@ class GamePlayScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildPracticeSplitFeedbackExplanation(BuildContext context, bool isMobile) {
+    final scores = controller.practiceSplitScores;
+    if (scores.isEmpty || controller.practiceSplitUserVote == null || controller.practiceSplitCorrectVote == null) {
+      return SizedBox.shrink();
+    }
+    final isCorrect = scores.last;
+    final userVote = controller.practiceSplitUserVote!;
+    final correctVote = controller.practiceSplitCorrectVote!;
+    final text = isCorrect
+        ? 'Correct! You voted to player $userVote.'
+        : 'Mistake! You voted to player $userVote, but correct is player $correctVote.';
+    final color = isCorrect ? Color(0xFF22C55E) : Color(0xFFDC2626);
+    return Center(
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontSize: isMobile ? 16 : 18,
+          fontWeight: FontWeight.bold,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPracticeSplitVotesInlineSwitch(BuildContext context, bool isMobile) {
+    final nominated = controller.practiceSplitNominated;
+    if (nominated.length != 2) return SizedBox.shrink();
+    final first = nominated[0];
+    final second = nominated[1];
+    final showFirst = controller.practiceSplitShowVotesShowFirst;
+    final current = showFirst ? first : second;
+
+    return Column(
+      children: [
+        Center(
+          child: Text(
+            'Showing votes to player $current',
+            style: TextStyle(
+              fontSize: isMobile ? 18 : 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF3B82F6),
+            ),
+          ),
+        ),
+        SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: isMobile ? 160 : 200,
+              child: ElevatedButton(
+                onPressed: () => controller.setPracticeSplitShowVotesShowFirst(true),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: showFirst ? Color(0xFF2563EB) : Color(0xFF475569),
+                  padding: EdgeInsets.symmetric(vertical: isMobile ? 12 : 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Text(
+                  'To player $first',
+                  style: TextStyle(
+                    fontSize: isMobile ? 14 : 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+            SizedBox(width: 12),
+            SizedBox(
+              width: isMobile ? 160 : 200,
+              child: ElevatedButton(
+                onPressed: () => controller.setPracticeSplitShowVotesShowFirst(false),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: !showFirst ? Color(0xFF2563EB) : Color(0xFF475569),
+                  padding: EdgeInsets.symmetric(vertical: isMobile ? 12 : 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                ),
+                child: Text(
+                  'To player $second',
+                  style: TextStyle(
+                    fontSize: isMobile ? 14 : 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  void _showPracticeSplitVotesDialog(BuildContext context) {
+    final nominated = controller.practiceSplitNominated;
+    if (nominated.length != 2) return;
+    final first = nominated[0];
+    final second = nominated[1];
+    final votersToFirst = controller.practiceSplitVotersToFirst;
+    final votersToSecond = controller.practiceSplitVotersToSecond;
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          backgroundColor: Color(0xFF1E293B),
+          title: Text(
+            'Split votes',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Votes to player $first',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  votersToFirst.isEmpty ? 'None' : votersToFirst.join(', '),
+                  style: TextStyle(color: Colors.grey[300]),
+                ),
+                SizedBox(height: 16),
+                Text(
+                  'Votes to player $second',
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                ),
+                SizedBox(height: 6),
+                Text(
+                  votersToSecond.isEmpty ? 'None' : votersToSecond.join(', '),
+                  style: TextStyle(color: Colors.grey[300]),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(
+                'Close',
+                style: TextStyle(color: Colors.grey[300]),
+              ),
+            )
+          ],
+        );
+      },
+    );
+  }
+
   Widget? _buildPracticeSplitActionButton(BuildContext context, bool isMobile, PracticeSplitPhase phase, bool votedThisScenario) {
     if (phase == PracticeSplitPhase.ready) {
       return SizedBox(
@@ -890,6 +1072,82 @@ class GamePlayScreen extends StatelessWidget {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
           child: Text(disabled ? 'Voted' : 'VOTE', style: TextStyle(fontSize: isMobile ? 18 : 22, fontWeight: FontWeight.bold, color: Colors.white)),
+        ),
+      );
+    }
+
+    if (phase == PracticeSplitPhase.feedback) {
+      final canManualContinue = !controller.practiceSplitAutoAdvanceResults;
+      if (controller.practiceSplitShowVotesOpen) {
+        final btnWidth = isMobile ? 260.0 : 320.0;
+        return Center(
+          child: SizedBox(
+            width: btnWidth,
+            child: ElevatedButton(
+              onPressed: () => controller.setPracticeSplitShowVotesOpen(false),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF475569),
+                padding: EdgeInsets.symmetric(vertical: isMobile ? 10 : 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              child: Text(
+                'Done',
+                style: TextStyle(
+                  fontSize: isMobile ? 18 : 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        );
+      }
+      final btnWidth = isMobile ? 220.0 : 280.0;
+      return Center(
+        child: SizedBox(
+          width: btnWidth,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (canManualContinue)
+                ElevatedButton(
+                  onPressed: controller.handlePracticeSplitContinue,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Color(0xFF2563EB),
+                    padding: EdgeInsets.symmetric(vertical: isMobile ? 10 : 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: Text(
+                    'Continue',
+                    style: TextStyle(
+                      fontSize: isMobile ? 18 : 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              if (canManualContinue) SizedBox(height: 8),
+              if (canManualContinue)
+                OutlinedButton(
+                  onPressed: () {
+                    controller.setPracticeSplitShowVotesOpen(true);
+                  },
+                  style: OutlinedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: isMobile ? 10 : 12),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: Text(
+                    'Show votes',
+                    style: TextStyle(
+                      fontSize: isMobile ? 16 : 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF3B82F6),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       );
     }

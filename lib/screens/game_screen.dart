@@ -353,6 +353,7 @@ class _GameScreenState extends State<GameScreen> {
                       },
                     ),
                     SizedBox(height: 8),
+                    SizedBox(height: 8),
                     CheckboxListTile(
                       title: Text(
                         'Fixed seat',

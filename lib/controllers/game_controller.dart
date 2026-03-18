@@ -47,8 +47,11 @@ class GameController extends ChangeNotifier {
   bool _practiceSplitOpenVote = true;
   int _practiceSplitVoteSeconds = 5;
   int _practiceSplitResultsSeconds = 5;
+  bool _practiceSplitAutoAdvanceResults = false; // false => show Continue button (default)
   bool _practiceSplitFixedSeat = false; // false = random seat every question (default)
   int _practiceSplitFixedSeatPlayerId = 1; // when fixed seat, which player 1-10
+  bool _practiceSplitShowVotesOpen = false; // inline panel (no popup)
+  bool _practiceSplitShowVotesShowFirst = true; // which nominee to show (first/second)
 
   // Getters
   GameState get gameState => _gameState;
@@ -92,8 +95,11 @@ class GameController extends ChangeNotifier {
   bool get practiceSplitOpenVote => _practiceSplitOpenVote;
   int get practiceSplitVoteSeconds => _practiceSplitVoteSeconds;
   int get practiceSplitResultsSeconds => _practiceSplitResultsSeconds;
+  bool get practiceSplitAutoAdvanceResults => _practiceSplitAutoAdvanceResults;
   bool get practiceSplitFixedSeat => _practiceSplitFixedSeat;
   int get practiceSplitFixedSeatPlayerId => _practiceSplitFixedSeatPlayerId;
+  bool get practiceSplitShowVotesOpen => _practiceSplitShowVotesOpen;
+  bool get practiceSplitShowVotesShowFirst => _practiceSplitShowVotesShowFirst;
 
   void setPracticeSplitOpenVote(bool value) {
     _practiceSplitOpenVote = value;
@@ -110,6 +116,11 @@ class GameController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setPracticeSplitAutoAdvanceResults(bool value) {
+    _practiceSplitAutoAdvanceResults = value;
+    notifyListeners();
+  }
+
   void setPracticeSplitFixedSeat(bool value) {
     _practiceSplitFixedSeat = value;
     notifyListeners();
@@ -117,6 +128,22 @@ class GameController extends ChangeNotifier {
 
   void setPracticeSplitFixedSeatPlayerId(int value) {
     _practiceSplitFixedSeatPlayerId = value.clamp(1, 10);
+    notifyListeners();
+  }
+
+  void setPracticeSplitShowVotesOpen(bool value) {
+    _practiceSplitShowVotesOpen = value;
+    if (value) _practiceSplitShowVotesShowFirst = true;
+    notifyListeners();
+  }
+
+  void setPracticeSplitShowVotesShowFirst(bool value) {
+    _practiceSplitShowVotesShowFirst = value;
+    notifyListeners();
+  }
+
+  void togglePracticeSplitShowVotesSide() {
+    _practiceSplitShowVotesShowFirst = !_practiceSplitShowVotesShowFirst;
     notifyListeners();
   }
 
@@ -194,6 +221,15 @@ class GameController extends ChangeNotifier {
     final lowIn610 = low >= 6 && low <= 10;
     final highIn610 = high >= 6 && high <= 10;
 
+    // Mixed halves: (x in 1-5, y in 6-10) => 1-5 vote to y, 6-10 vote to x.
+    // This applies even when neither nominee is player 1.
+    if ((lowIn15 && highIn610) || (lowIn610 && highIn15)) {
+      final player15 = lowIn15 ? low : high;    // the nominee in 1-5
+      final player610 = lowIn610 ? low : high; // the nominee in 6-10
+      if (mePlayer >= 1 && mePlayer <= 5) return player610;
+      if (mePlayer >= 6 && mePlayer <= 10) return player15;
+    }
+
     // Split without 1: e.g. 3,4 → 4,5,6,7,8 vote to 3; rest vote to 4
     if (low != 1) {
       final votersToLow = <int>[];
@@ -205,19 +241,13 @@ class GameController extends ChangeNotifier {
       return votersToLow.contains(mePlayer) ? low : high;
     }
 
-    // Split with 1: (1, X) where X in 2-6 → 2-6 vote to 1, 1 and 7-10 vote to X (1 never votes to himself)
+    // Split with 1: (1, X) where X in 2-5 (both in 1-5) →
+    // 2-6 vote to 1, and 1 votes to X (never to himself).
     if (lowIn15 && highIn15) {
       if (mePlayer >= 2 && mePlayer <= 6) return low;   // 2-6 vote to 1
       if (mePlayer >= 7 && mePlayer <= 10) return high; // 7-10 vote to X
       if (mePlayer == 1) return high;                   // 1 votes to X, never to himself
       return low;
-    }
-    // Split (X, Y) with X in 1-5, Y in 6-10: 1-5 vote to Y, 6-10 vote to X
-    if ((lowIn15 && highIn610) || (lowIn610 && highIn15)) {
-      final player15 = lowIn15 ? low : high;
-      final player610 = lowIn610 ? low : high;
-      if (mePlayer >= 1 && mePlayer <= 5) return player610;
-      if (mePlayer >= 6 && mePlayer <= 10) return player15;
     }
     return null;
   }
@@ -264,6 +294,7 @@ class GameController extends ChangeNotifier {
     _practiceSplitVotedInSecond = false;
     _practiceSplitVotersToFirst = [];
     _practiceSplitVotersToSecond = [];
+    _practiceSplitShowVotesOpen = false;
     _gameState = GameState.practiceSplit;
     _memoryTrainType = MemoryTrainType.practiceSplit;
     if (_practiceSplitFixedSeat) {
@@ -293,6 +324,7 @@ class GameController extends ChangeNotifier {
     _practiceSplitUserVote = null;
     _practiceSplitVotedInFirst = false;
     _practiceSplitVotedInSecond = false;
+    _practiceSplitShowVotesOpen = false;
     _practiceSplitPhase = PracticeSplitPhase.ready;
     notifyListeners();
   }
@@ -304,6 +336,7 @@ class GameController extends ChangeNotifier {
     final resultsSec = _practiceSplitResultsSeconds;
     _practiceSplitPhase = PracticeSplitPhase.votingToFirst;
     notifyListeners();
+
     Future.delayed(Duration(seconds: voteSec), () {
       if (_gameState != GameState.practiceSplit) return;
       if (_practiceSplitPhase != PracticeSplitPhase.votingToFirst) return;
@@ -313,6 +346,7 @@ class GameController extends ChangeNotifier {
         notifyListeners();
         Future.delayed(Duration(seconds: resultsSec), () {
           if (_gameState != GameState.practiceSplit) return;
+          if (_practiceSplitPhase != PracticeSplitPhase.showingResultsFirst) return;
           _practiceSplitPhase = PracticeSplitPhase.votingToSecond;
           notifyListeners();
           _afterVotingToSecond(voteSec, resultsSec);
@@ -330,11 +364,13 @@ class GameController extends ChangeNotifier {
       if (_gameState != GameState.practiceSplit) return;
       if (_practiceSplitPhase != PracticeSplitPhase.votingToSecond) return;
       _computeAndSetVotersForResults();
+
       if (_practiceSplitOpenVote) {
         _practiceSplitPhase = PracticeSplitPhase.showingResultsSecond;
         notifyListeners();
         Future.delayed(Duration(seconds: resultsSec), () {
           if (_gameState != GameState.practiceSplit) return;
+          if (_practiceSplitPhase != PracticeSplitPhase.showingResultsSecond) return;
           _finishPracticeSplitScenario();
         });
       } else {
@@ -342,15 +378,28 @@ class GameController extends ChangeNotifier {
         notifyListeners();
         Future.delayed(Duration(seconds: resultsSec), () {
           if (_gameState != GameState.practiceSplit) return;
+          if (_practiceSplitPhase != PracticeSplitPhase.showingResultsFirst) return;
           _practiceSplitPhase = PracticeSplitPhase.showingResultsSecond;
           notifyListeners();
+
           Future.delayed(Duration(seconds: resultsSec), () {
             if (_gameState != GameState.practiceSplit) return;
+            if (_practiceSplitPhase != PracticeSplitPhase.showingResultsSecond) return;
             _finishPracticeSplitScenario();
           });
         });
       }
     });
+  }
+
+  void handlePracticeSplitContinue() {
+    if (_gameState != GameState.practiceSplit) return;
+    if (_practiceSplitPhase != PracticeSplitPhase.feedback) return;
+    if (_practiceSplitAutoAdvanceResults) return; // old timer mode handles advancing
+
+    _practiceSplitShowVotesOpen = false;
+    notifyListeners();
+    _scheduleNextPracticeSplit(delay: Duration.zero);
   }
 
   void _finishPracticeSplitScenario() {
@@ -363,11 +412,13 @@ class GameController extends ChangeNotifier {
     _practiceSplitScores.add(correct);
     _practiceSplitPhase = PracticeSplitPhase.feedback;
     notifyListeners();
-    _scheduleNextPracticeSplit();
+    if (_practiceSplitAutoAdvanceResults) {
+      _scheduleNextPracticeSplit();
+    }
   }
 
-  void _scheduleNextPracticeSplit() {
-    Future.delayed(Duration(milliseconds: 1500), () {
+  void _scheduleNextPracticeSplit({Duration delay = const Duration(milliseconds: 1500)}) {
+    Future.delayed(delay, () {
       if (_gameState != GameState.practiceSplit) return;
       _practiceSplitCurrentScenario++;
       if (_practiceSplitCurrentScenario >= _practiceSplitTotalScenarios) {
